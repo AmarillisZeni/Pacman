@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pac-Man Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #000;
+        }
+        canvas {
+            background: #000;
+            border: 1px solid #fff;
+        }
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: space-around;
+            width: 200px;
+        }
+        .control-button {
+            background: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .control-button:active {
+            background: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div class="controls">
+        <button class="control-button" id="left">←</button>
+        <button class="control-button" id="up">↑</button>
+        <button class="control-button" id="right">→</button>
+        <button class="control-button" id="down">↓</button>
+    </div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let pacMan = {
+            x: 200,
+            y: 200,
+            size: 30,
+            speed: 5,
+            dx: 0,
+            dy: 0
+        };
+
+        function drawPacMan() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.arc(pacMan.x, pacMan.y, pacMan.size, 0.2 * Math.PI, 1.8 * Math.PI); // Draw Pac-Man
+            ctx.lineTo(pacMan.x, pacMan.y);
+            ctx.fillStyle = 'yellow';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function update() {
+            pacMan.x += pacMan.dx;
+            pacMan.y += pacMan.dy;
+
+            if (pacMan.x < pacMan.size) pacMan.x = pacMan.size;
+            if (pacMan.x > canvas.width - pacMan.size) pacMan.x = canvas.width - pacMan.size;
+            if (pacMan.y < pacMan.size) pacMan.y = pacMan.size;
+            if (pacMan.y > canvas.height - pacMan.size) pacMan.y = canvas.height - pacMan.size;
+
+            drawPacMan();
+            requestAnimationFrame(update);
+        }
+
+        function movePacMan(e) {
+            switch (e.target.id) {
+                case 'left':
+                    pacMan.dx = -pacMan.speed;
+                    pacMan.dy = 0;
+                    break;
+                case 'right':
+                    pacMan.dx = pacMan.speed;
+                    pacMan.dy = 0;
+                    break;
+                case 'up':
+                    pacMan.dy = -pacMan.speed;
+                    pacMan.dx = 0;
+                    break;
+                case 'down':
+                    pacMan.dy = pacMan.speed;
+                    pacMan.dx = 0;
+                    break;
+            }
+        }
+
+        document.getElementById('left').addEventListener('click', movePacMan);
+        document.getElementById('right').addEventListener('click', movePacMan);
+        document.getElementById('up').addEventListener('click', movePacMan);
+        document.getElementById('down').addEventListener('click', movePacMan);
+
+        canvas.addEventListener('touchstart', function(e) {
+            const touch = e.touches[0];
+            const touchX = touch.clientX;
+            const touchY = touch.clientY;
+            const canvasRect = canvas.getBoundingClientRect();
+            const canvasX = touchX - canvasRect.left;
+            const canvasY = touchY - canvasRect.top;
+
+            if (canvasX < canvas.width / 2) {
+                pacMan.dx = -pacMan.speed;
+                pacMan.dy = 0;
+            } else {
+                pacMan.dx = pacMan.speed;
+                pacMan.dy = 0;
+            }
+        });
+
+        update();
+    </script>
+</body>
+</html>
